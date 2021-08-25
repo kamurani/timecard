@@ -21,4 +21,7 @@ CLI tool for tracking various tasks and storing completed 'shifts'
 ```
 $ timecard view --ongoing 
 # just show all tasks that are currently active 
+
+$ timecard rename "Task1" "New Name"
+# Renames task
 ```

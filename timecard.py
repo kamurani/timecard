@@ -24,10 +24,6 @@ TODO sort shifts within the 'shifts' array in chronological order
 TODO set 'alarms' i.e. 'clockout at 3pm today' -- doesn't actually set the shift yet (i.e. can't set things in the future)
 but will somehow keep track (server?) and set it later
 
-TODO timecard task rename "Hospital"
-        Rename to:  <user input> 
-     Renamed Hospital to Orderly Job. 
-
 TODO if only one task left, that is the working task. (i.e. when no ambiguity)
 
 
@@ -356,16 +352,22 @@ Get current task
 '''
 def current_task():
     global metadata
-
     if CURRENT_WORKING_TASK in metadata: 
         return metadata[CURRENT_WORKING_TASK] 
 
-     
     return None
 
-def set_current_task(task):
+def is_current_task(name):
     global metadata
-    metadata[CURRENT_WORKING_TASK] = task
+    if CURRENT_WORKING_TASK in metadata: 
+        return name == metadata[CURRENT_WORKING_TASK]
+
+    return None
+
+def set_current_task(name):
+    # Name is a string
+    global metadata
+    metadata[CURRENT_WORKING_TASK] = name
 
 '''
 Initialise
@@ -445,6 +447,13 @@ def rename(task, name):
     
     elif task not in tasks:
         print ('No task called {}.'.format(task))
+        return 1
+
+    elif task == name:
+        return
+
+    elif name in tasks:
+        print ('{} is already a task.'.format(name))
         return
 
     original = task
@@ -456,8 +465,12 @@ def rename(task, name):
     tasks.pop(original, None)
     tasks[name] = vars(task)
 
-    # Update working task 
-    # TODO
+    if is_current_task(original):
+        set_current_task(name)
+
+
+    print ("Renamed {} to {}.".format(original, name))
+
     finish()
 
 
@@ -880,7 +893,7 @@ def status(task):
 
 '''
 $ timecard view --ongoing 
-# just show all tasks that are currently on
+# just show all tasks that are currently active 
 '''
 @command
 def view():
