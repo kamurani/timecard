@@ -24,4 +24,19 @@ $ timecard view --ongoing
 
 $ timecard rename "Task1" "New Name"
 # Renames task
+
+# Punch  
+# Remembers what your current working task is
+
+$ timecard punch 
+NEUR3121: Clocked in at 18:50.
+$ timecard punch Task2 
+Task2: Clocked in at 18:51. 
+$ timecard punch 
+NEUR3121: Clocked out at 18:52. 
+$ timecard task Task2
+Switched task to Task2. 
+$ timecard punch
+Task2: Clocked out at 18:53.
+
 ```
