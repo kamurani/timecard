@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
 '''
+
+
+
 TODO 
 INTERACTIVE MODE 
 - curses based display 
@@ -423,6 +426,41 @@ def write_metadata():
         json.dump(metadata, write_file)
 
 
+
+@command
+def rename(task, name):
+    '''Change task name.
+
+    Change an existing task's name. 
+
+    :param task:  Task to change.
+    :param name:  New name for task. 
+    '''
+    initialise()
+    global metadata
+    global tasks
+
+    if task is None:
+        task = current_task()
+    
+    elif task not in tasks:
+        print ('No task called {}.'.format(task))
+        return
+
+    original = task
+    task_dict = tasks[original]
+    task = make_task_from_dict(task_dict)
+
+    task.name = name
+
+    tasks.pop(original, None)
+    tasks[name] = vars(task)
+
+    # Update working task 
+    # TODO
+    finish()
+
+
 @command
 def punch(task):
     '''Clock in or out of a task at the current time.
@@ -443,8 +481,9 @@ def punch(task):
         print ('No task called {}.'.format(task))
         return
     
-    #task.addPunch()
-    #task.print_punch()
+    # TODO
+    # task.addPunch()
+    # task.print_punch()
 
     # task.clock_in()
     # or 

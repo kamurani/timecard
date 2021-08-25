@@ -2,6 +2,11 @@
 CLI tool for tracking various tasks and storing completed 'shifts' 
 
 
+### Urgent TODO
+
+- `update()` function that can tell if current working task has been renamed
+- If no current working task, set one automatically 
+
 ### TODO
 
 - Output shifts for a given task 
