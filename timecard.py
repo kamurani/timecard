@@ -219,6 +219,10 @@ class Task(dict):
     
     def add_shift(self, shift): 
         self.shifts.append(shift)
+
+
+    def get_shifts(self):
+        return self.shifts
     
     def get_clockin_time(self):
         return self.clockin_time
@@ -559,12 +563,31 @@ def shift(task, start=None, end=None, back=None, all=False):
     :param -a, --all: Show shifts for all tasks.  
     '''
 
-    
+    initialise()
+    global tasks
+    global metadata
 
     if start is None:
 
         # Ignore start times 
-        pass
+
+        name = task 
+
+        if name not in tasks:
+            print ('No task called {}.'.format(name))
+            return
+
+        else: 
+            task = tasks[name]
+            task = make_task_from_dict(task) 
+
+            shifts = task.get_shifts()
+
+            for shift in shifts:
+                print (shift)
+
+            
+        
 
     else:
 
