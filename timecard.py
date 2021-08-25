@@ -165,23 +165,35 @@ from datetime import timedelta
 import sys
 import json
 
+from tabulate import tabulate
+
 
 '''
 Constants
 '''
-PROGRAM_NAME = 'timecard'
+PROGRAM_NAME    = 'timecard'
 DEFAULT_COMMAND = 'shell'
 
-OUTPUT_FILE = 'log.json'
-METADATA_FILE = 'metadata.json'
+OUTPUT_FILE     = 'log.json'
+METADATA_FILE   = 'metadata.json'
 
-DEFAULT_PROMPT = '>'
+DEFAULT_PROMPT  = '>'
 
-TASK_NAME = 'name'
-TASK_SHIFTS = 'shifts'
-TASK_CLOCKIN = 'clockin_time'
+TASK_NAME       = 'name'
+TASK_SHIFTS     = 'shifts'
+TASK_CLOCKIN    = 'clockin_time'
 
-COMMAND_PUNCH = "punch"
+
+SHIFT_START     = 'start'
+SHIFT_END       = 'end'
+
+COMMAND_PUNCH   = 'punch'
+COMMAND_SHIFT   = 'shift'
+COMMAND_LIST    = 'list'
+COMMAND_ADD     = 'add'
+COMMAND_REMOVE  = 'remove'
+
+
 
 '''
 Metadata
@@ -560,12 +572,15 @@ def shift(task, start=None, end=None, back=None, all=False):
     :param -s, --start: Start date for range of shifts.
     :param -e, --end: End date for range of shifts.
     :param -b, --back: Number of days in the past to show shifts from.
-    :param -a, --all: Show shifts for all tasks.  
+    :param -a, --all: Show shifts for all tasks, or all shifts for specified task. 
     '''
 
     initialise()
     global tasks
     global metadata
+
+    if task is None:
+        task = current_task()
 
     if start is None:
 
@@ -583,10 +598,37 @@ def shift(task, start=None, end=None, back=None, all=False):
 
             shifts = task.get_shifts()
 
-            for shift in shifts:
-                print (shift)
+            if not shifts:
+                print ("No shifts for {}.".format(name))
 
-            #Comment
+
+            else:
+                # Display shift
+
+                 # Header
+                print(name)
+                print("-------------------------")
+
+                table = []
+                HEADER_DAY      = 'DAY'
+                HEADER_START    = 'START'
+                HEADER_END      = 'END'
+
+                for shift in shifts:
+
+                    start   = shift[SHIFT_START]
+                    end     = shift[SHIFT_END]  
+                    day     = start.strftime("%A").upper()
+                    
+                    
+                    row = [day, start.strftime("%H:%M"), end.strftime("%H:%M")]
+                    table.append(row)
+                   
+                  
+
+                # Print table
+                print(tabulate(table, headers=[HEADER_DAY, HEADER_START, HEADER_END]))
+            
         
 
     else:
@@ -824,6 +866,12 @@ if not sys.argv[1:]:
 # 'punch' without task name should add punch for current working task
 if sys.argv[1] == COMMAND_PUNCH:
     
+    if not sys.argv[2:]:
+        sys.argv.append(current_task())
+
+# 'shift' without task name should show shifts for current working task
+if sys.argv[1] == COMMAND_SHIFT:
+
     if not sys.argv[2:]:
         sys.argv.append(current_task())
 
