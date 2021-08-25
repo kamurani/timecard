@@ -17,3 +17,8 @@ CLI tool for tracking various tasks and storing completed 'shifts'
 
 
 ### Usage
+
+```
+$ timecard view --ongoing 
+# just show all tasks that are currently active 
+```
