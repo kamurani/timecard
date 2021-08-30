@@ -165,6 +165,7 @@ import sys
 import json
 
 from tabulate import tabulate
+import os
 
 
 '''
@@ -173,8 +174,18 @@ Constants
 PROGRAM_NAME    = 'timecard'
 DEFAULT_COMMAND = 'shell'
 
-OUTPUT_FILE     = 'log.json'
-METADATA_FILE   = 'metadata.json'
+output_file_name = 'log.json'
+metadata_file_name = 'metadata.json'
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
+
+OUTPUT_FILE     = os.path.join(script_dir, output_file_name)
+METADATA_FILE   = os.path.join(script_dir, metadata_file_name)
+
+
+
+
 
 DEFAULT_PROMPT  = '>'
 
@@ -742,7 +753,12 @@ def remove(task, all=False):
 @command
 def shell(arg=False, verbose=False):
     prompt = DEFAULT_PROMPT
-    print (prompt)
+    # print (prompt)
+
+    # Debug for finding path of file 
+    fileDir = os.path.dirname(os.path.realpath(__file__))
+    print ("DIR:")
+    print (fileDir)
 
 '''
 TODO add more elgant way of doing 'timecard add shift' vs 'timecard add task' 
