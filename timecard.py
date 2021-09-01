@@ -266,6 +266,20 @@ class Task(dict):
         self.add_shift(vars(shift))
         self.clockin_time = None
 
+    def get_last_clockin(self):
+
+        # Return the start of the last (completed) shift 
+        shift = self.shifts[-1]
+        shift = make_shift_from_dict(shift)
+        return shift.get_start()
+
+    def get_last_shift_duration(self):
+
+        # Return the duration of the last (completed) shift 
+        shift = self.shifts[-1]
+        shift = make_shift_from_dict(shift)
+        return shift.get_duration()
+        
 
 
 class Shift(dict):
@@ -281,6 +295,9 @@ class Shift(dict):
     def get_duration(self):
             duration = self.end - self.start 
             return duration
+
+    def get_start(self):
+        return self.start
 
     
 
@@ -345,9 +362,69 @@ def make_task_from_dict(task_dict):
     task = Task(name, shifts, clockin_time)
     return task
 
+def make_shift_from_dict(shift_dict):
+
+    start   = shift_dict[SHIFT_START]
+    end     = shift_dict[SHIFT_END]
+    
+    shift = Shift(start, end)
+    return shift
 
 
+'''
+Formatters for displaying time values intelligently
+'''
+def format_time_duration(dur):
 
+    # Type 'timespan'
+    sec = timedelta(seconds=1)
+    if dur < sec:
+
+        return "1 s"
+    
+    if dur < timedelta(minutes=1):
+        return (f"{dur.seconds} s")
+    
+    if dur < timedelta(hours=1):
+        length = dur.seconds // 60
+        return (f"{length} m")
+
+    if dur < timedelta(hours=24):
+
+        return ""
+
+
+def humanize():
+
+    pass
+
+    # return things like "today" if given today's date; "yesterday" etc. 
+    # TODO define all the logic of how to display a time in a separate file 
+
+'''
+Stack
+
+def td_format(td_object):
+    seconds = int(td_object.total_seconds())
+    periods = [
+        ('year',        60*60*24*365),
+        ('month',       60*60*24*30),
+        ('day',         60*60*24),
+        ('hour',        60*60),
+        ('minute',      60),
+        ('second',      1)
+    ]
+
+    strings=[]
+    for period_name, period_seconds in periods:
+        if seconds > period_seconds:
+            period_value , seconds = divmod(seconds, period_seconds)
+            has_s = 's' if period_value > 1 else ''
+            strings.append("%s %s%s" % (period_value, period_name, has_s))
+
+    return ", ".join(strings)
+
+'''
 
 
 '''
@@ -549,13 +626,27 @@ def punch(task):
         direction = 'out'
         task.clockout()
 
-        task.add_shift
+        
+
+        # Get duration of shift
+        dur = task.get_last_shift_duration()
+        dur = format_time_duration(dur)
+        last_shift_message = f'Completed shift of {dur}.' #TODO
 
 
     else:
         # Clock in
         direction = 'in'
         task.clockin() 
+
+        # Get last time we clocked in 
+
+        # e.g. 'last clockin was today, at 12:03.  
+        # OR 'last clockin was Monday.'
+
+        time = task.get_last_clockin() 
+        
+        last_shift_message = ""
 
         '''TODO: put this in the Task() class; i.e. just do 'task.punch' '''
 
@@ -579,6 +670,13 @@ def punch(task):
     punchtime = current_time
 
     print ('{}: Clocked {} at {}.'.format(task.get_name(), direction, punchtime))
+
+
+    # Check for duration of shift / last shift.  
+
+    print (last_shift_message)
+
+
 
     finish()
 
